@@ -1,4 +1,5 @@
 import os
+import json
 import streamlit as st
 import time
 from pathlib import Path
@@ -66,7 +67,6 @@ with st.sidebar:
         
         if process_button:
             with st.spinner("Processing documents..."):
-                # Save uploaded files
                 file_paths = []
                 for uploaded_file in uploaded_files:
                     file_path = save_uploaded_file(uploaded_file)
@@ -76,19 +76,15 @@ with st.sidebar:
                         "path": file_path
                     })
                 
-                # Load and process documents
                 documents = load_pdf_documents(file_paths)
                 
                 if documents:
-                    # Split and enhance documents
                     document_chunks = split_documents(documents)
                     enhanced_chunks = enhance_documents(document_chunks)
                     
-                    # Create or update vector store
                     vectorstore = create_vectorstore(enhanced_chunks)
                     save_vectorstore(vectorstore)
                     
-                    # Create retriever
                     retriever = create_retriever(vectorstore)
                     st.session_state.retriever = retriever
                     st.session_state.vectorstore_ready = True
@@ -97,9 +93,7 @@ with st.sidebar:
                 else:
                     st.error("No documents were successfully loaded. Please check the files and try again.")
     
-    # Advanced settings
     st.header("⚙️ Settings")
-    
     prompt_type = st.selectbox(
         "Response Style",
         ["standard", "few_shot", "structured"],
@@ -109,18 +103,16 @@ with st.sidebar:
             "structured": "Structured Output"
         }[x]
     )
-    
-    st.divider()
-    
-    # Display uploaded documents
+
+    st.markdown("<hr/>", unsafe_allow_html=True)
+
     if st.session_state.uploaded_files:
         st.header("📄 Uploaded Documents")
         for file in st.session_state.uploaded_files:
             st.write(f"- {file['name']}")
-    
-    st.divider()
-    
-    # Credits
+
+    st.markdown("<hr/>", unsafe_allow_html=True)
+
     st.markdown("### About")
     st.markdown("""
     Diabetes Management Assistant is a RAG-based medical chatbot powered by:
@@ -138,72 +130,52 @@ if not st.session_state.vectorstore_ready:
         st.session_state.retriever = retriever
         st.session_state.vectorstore_ready = True
 
-# Display chat messages
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+# Display chat history
+st.subheader("💬 Chat History")
+for i, message in enumerate(st.session_state.messages):
+    role = "👤 You" if message["role"] == "user" else "🤖 Assistant"
+    st.markdown(f"**{role}:** {message['content']}")
 
-# Chat input
-if prompt := st.chat_input("Ask a question about diabetes management..."):
-    # Add user message to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    
-    # Display user message
-    with st.chat_message("user"):
-        st.markdown(prompt)
-    
-    # Display assistant response
-    with st.chat_message("assistant"):
-        if not st.session_state.vectorstore_ready:
-            st.markdown("Please upload and process documents before asking questions.")
-        else:
-            # Create a placeholder for the response
-            response_placeholder = st.empty()
-            sources_container = st.container()
-            
-            # Create thinking spinner
-            with st.spinner("Thinking..."):
-                # Retrieve relevant documents
-                docs = retrieve_documents(st.session_state.retriever, prompt)
-                
-                # Create QA chain
-                qa_chain = create_custom_qa_chain(st.session_state.retriever, prompt_type)
-                
-                # Get response
-                response = qa_chain.invoke(prompt)
-                response_text = response.content if hasattr(response, 'content') else str(response)
-                
-                # Format response
-                if prompt_type == "structured":
-                    # Try to extract structured JSON
-                    json_data = extract_json_from_response(response_text)
-                    if json_data:
-                        formatted_response = format_response(json.dumps(json_data))
-                    else:
-                        formatted_response = response_text
+# Input box for chat prompt (compatible with older Streamlit)
+user_input = st.text_input("Ask a question about diabetes management:", key="user_input")
+submit_button = st.button("Send")
+
+if submit_button and user_input:
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    st.markdown(f"**👤 You:** {user_input}")
+
+    if not st.session_state.vectorstore_ready:
+        st.warning("Please upload and process documents before asking questions.")
+    else:
+        with st.spinner("Thinking..."):
+            docs = retrieve_documents(st.session_state.retriever, user_input)
+            qa_chain = create_custom_qa_chain(st.session_state.retriever, prompt_type)
+            response = qa_chain.invoke(user_input)
+            response_text = response.content if hasattr(response, 'content') else str(response)
+
+            if prompt_type == "structured":
+                json_data = extract_json_from_response(response_text)
+                if json_data:
+                    formatted_response = format_response(json.dumps(json_data))
                 else:
                     formatted_response = response_text
-                
-                # Display response
-                response_placeholder.markdown(formatted_response)
-                
-                # Add response to chat history
-                st.session_state.messages.append({"role": "assistant", "content": formatted_response})
-                
-                # Display sources
-                with sources_container:
-                    st.markdown("#### Sources")
-                    sources = extract_sources_from_docs(docs)
-                    
-                    for i, source in enumerate(sources):
-                        st.markdown(f"""
-                        **Source {i+1}:** {source.get('source', 'Unknown')} (Page {source.get('page', 'Unknown')})  
-                        *Preview:* {source.get('preview', 'No preview available')}
-                        """)
+            else:
+                formatted_response = response_text
 
-# Display a welcome message when no messages exist
+            st.markdown(f"**🤖 Assistant:** {formatted_response}")
+            st.session_state.messages.append({"role": "assistant", "content": formatted_response})
+
+            st.markdown("#### Sources")
+            sources = extract_sources_from_docs(docs)
+            for i, source in enumerate(sources):
+                st.markdown(f"""
+                **Source {i+1}:** {source.get('source', 'Unknown')} (Page {source.get('page', 'Unknown')})  
+                *Preview:* {source.get('preview', 'No preview available')}
+                """)
+
 if not st.session_state.messages:
     st.info("👋 Welcome! Upload diabetes-related PDF documents and ask questions to get started.")
+
 
 # Run the Streamlit app
 if __name__ == "__main__":
