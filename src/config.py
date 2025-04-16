@@ -21,7 +21,11 @@ TOP_K_RESULTS = 5
 
 # Application settings
 APP_TITLE = "Diabetes Management Assistant"
-APP_DESCRIPTION = "A RAG-based Medical GenAI chatbot for diabetic patients"
+APP_DESCRIPTION = (
+    "A RAG-based Medical GenAI chatbot for diabetic patients.\n\n"
+    "⚠️ Disclaimer: This tool is for educational purposes only and not intended as medical advice."
+)
+
 
 # Few-shot examples for the chatbot
 FEW_SHOT_EXAMPLES = [

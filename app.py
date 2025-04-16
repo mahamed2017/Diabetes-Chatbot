@@ -121,7 +121,7 @@ with st.sidebar:
     - FAISS Vector Database
     - Streamlit
     """)
-
+    
 # Initialize vectorstore at startup if not initialized
 if not st.session_state.vectorstore_ready:
     vectorstore = get_or_create_vectorstore()
