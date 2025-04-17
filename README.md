@@ -17,7 +17,37 @@ A medical GenAI chatbot designed to assist with diabetes-related questions using
 
 ## 🗂️ Project Structure
 
-diabetes_rag_assistant/ ├── app.py # Main Streamlit application ├── requirements.txt # Project dependencies ├── .env # Environment variables (API keys) ├── .gitignore # Git ignore file ├── README.md # Project documentation ├── data/ # Directory for PDF documents │ └── .gitkeep ├── src/ │ ├── init.py │ ├── config.py # Configuration settings │ ├── document_processing/ │ │ ├── init.py │ │ ├── loader.py # Document loading utilities │ │ └── processor.py # Text processing utilities │ ├── embeddings/ │ │ ├── init.py │ │ └── gemini_embeddings.py # Gemini embedding utilities │ ├── rag/ │ │ ├── init.py │ │ ├── vectorstore.py # FAISS vector store management │ │ └── retriever.py # Document retrieval utilities │ ├── chains/ │ │ ├── init.py │ │ ├── qa_chain.py # Question-answering chain │ │ └── prompts.py # Custom prompt templates │ └── utils/ │ ├── init.py │ └── helpers.py # Helper functions └── tests/ # Test cases └── init.py
+diabetes_rag_assistant/
+├── app.py                  # Main Streamlit application
+├── requirements.txt        # Project dependencies
+├── .env                    # Environment variables (API keys)
+├── .gitignore              # Git ignore file
+├── README.md               # Project documentation
+├── data/                   # Directory for PDF documents
+│   └── .gitkeep
+├── src/
+│   ├── __init__.py
+│   ├── config.py           # Configuration settings
+│   ├── document_processing/
+│   │   ├── __init__.py
+│   │   ├── loader.py       # Document loading utilities
+│   │   └── processor.py    # Text processing utilities
+│   ├── embeddings/
+│   │   ├── __init__.py
+│   │   └── gemini_embeddings.py  # Gemini embedding utilities
+│   ├── rag/
+│   │   ├── __init__.py
+│   │   ├── vectorstore.py  # FAISS vector store management
+│   │   └── retriever.py    # Document retrieval utilities
+│   ├── chains/
+│   │   ├── __init__.py
+│   │   ├── qa_chain.py     # Question-answering chain
+│   │   └── prompts.py      # Custom prompt templates
+│   └── utils/
+│       ├── __init__.py
+│       └── helpers.py      # Helper functions
+└── tests/                  # Test cases
+    └── __init__.py
 
 ## ⚙️ Getting Started
 
