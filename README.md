@@ -90,6 +90,9 @@ The assistant will fetch the most relevant context and generate an answer.
 # 📄 License
 This project is licensed under the MIT License.
 
+# Contact
+E-mail:mahamed.02@outlook.com
+
 
 
 
