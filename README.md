@@ -49,10 +49,10 @@ diabetes_rag_assistant/
 └── tests/                  # Test cases
     └── __init__.py
 
-## ⚙️ Getting Started
+# ⚙️ Getting Started
 
-# Clone the repository
 ```bash
+# Clone the repository
 git clone https://github.com/your-username/diabetes_rag_assistant.git
 cd diabetes_rag_assistant
 
