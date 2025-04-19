@@ -51,7 +51,7 @@ diabetes_rag_assistant/
 
 ## ⚙️ Getting Started
 
-### 1. Clone the repository
+# Clone the repository
 ```bash
 git clone https://github.com/your-username/diabetes_rag_assistant.git
 cd diabetes_rag_assistant
